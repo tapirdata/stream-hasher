@@ -2,47 +2,54 @@
 path = require 'path'
 events = require 'events'
 crypto = require 'crypto'
-through2 = require 'through2'
+stream = require 'readable-stream'
 
 
-class State
-  constructor: (@hasher) ->
+class DataThrough extends stream.Transform
+  constructor: (@hasher, @name) ->
+    super()
     @hashStream = crypto.createHash 'sha1'
+    
+    @on 'end', ->
+      @hashStream.end()
+      digest = @hashStream.read().toString 'hex'
+      @hasher.emitDigest @name, digest
 
-  write: (chunk) ->  
-    @hashStream.write chunk
-
-  end: ->  
-    @hashStream.end()
-    digest = @hashStream.read().toString 'hex'
-    # console.log 'digest=', digest
-    @hasher.emit 'hashDigest', digest
+  _transform: (chunk, enc, next) ->
+    # console.log 'DataThrough._transform name=%s, chunk=', @name, chunk
+    @hashStream.write chunk, enc, ->
+      next null, chunk
 
 
-class Hasher extends events.EventEmitter
+class FileThrough extends stream.Transform
+  constructor: (@hasher) ->
+    super objectMode: true
+
+  _transform: (file, enc, next) ->
+    dataThrough = @hasher.createDataThrough file
+    # console.log 'FileThrough._transform file=', file
+    if file.isStream()
+      # file = file.clone()
+      file.contents = file.contents.pipe dataThrough
+      next null, file
+    else  
+      dataThrough.end file.contents, null, ->
+        dataThrough.resume()
+        next null, file
+
+
+class StreamHasher extends events.EventEmitter
   constructor: (@options) ->
 
-  createState: ->  
-    new State @
+  createDataThrough: (file) ->
+    new DataThrough @, file.path
 
-  createStream: ->
-    state = @createState()
-    stream = through2 (chunk, enc, cb) ->
-      # console.log 'hasher', chunk.length
-      state.write chunk
-      @push chunk
-      cb()
-    stream.on 'end', ->
-      state.end()
-    stream
+  createFileThrough: ->
+    new FileThrough @
 
-  createVinylStream: ->
-    through2.obj (file, enc, cb) =>
-      # console.log 'createVinylStream file:', file.isStream(), file.path
-      if file.isStream()
-        file.contents = file.contents.pipe @createStream()
-      cb null, file
-      return
+  emitDigest: (name, digest) ->
+    @emit 'digest', name, digest
 
-module.exports = Hasher
+
+module.exports = StreamHasher
 
