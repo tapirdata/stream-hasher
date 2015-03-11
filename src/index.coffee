@@ -5,51 +5,60 @@ crypto = require 'crypto'
 stream = require 'readable-stream'
 
 
-class DataThrough extends stream.Transform
-  constructor: (@hasher, @name) ->
+class SingleHasher extends stream.Transform
+  constructor: (name, options) ->
     super()
-    @hashStream = crypto.createHash 'sha1'
-    
+    if typeof name == 'object'
+      options = name
+      name = options.name
+    else    
+      options = options or {}
+    @name = name
+    @algorithm = options.algorithm or 'sha1'
+    @digestEncoding = options.digestEncoding or 'hex'
+    @hashStream = @createHashStream()
     @on 'end', ->
       @hashStream.end()
-      digest = @hashStream.read().toString 'hex'
-      @hasher.emitDigest @name, digest
+      digest = @hashStream.read()
+      if @digestEncoding != 'none'
+        digest = digest.toString @digestEncoding
+      @emit 'digest', digest, @name
+      return
+    return
 
+  createHashStream: ->  
+    crypto.createHash @algorithm
+    
   _transform: (chunk, enc, next) ->
-    # console.log 'DataThrough._transform name=%s, chunk=', @name, chunk
     @hashStream.write chunk, enc, ->
       next null, chunk
+      return
 
 
-class FileThrough extends stream.Transform
-  constructor: (@hasher) ->
+class MultiHasher extends stream.Transform
+  constructor: (options) ->
     super objectMode: true
+    @options = options or {}
+    @fileNamer = @options.fileNamer or (file) -> file.path
+
+  createSingleHasher: (name) ->
+    singleHasher = new SingleHasher name, @options
+    singleHasher.on 'digest', (digest, name) =>
+      @emit 'digest', digest, name
 
   _transform: (file, enc, next) ->
-    dataThrough = @hasher.createDataThrough file
-    # console.log 'FileThrough._transform file=', file
+    singleHasher = @createSingleHasher @fileNamer file
     if file.isStream()
-      # file = file.clone()
-      file.contents = file.contents.pipe dataThrough
+      file.contents = file.contents.pipe singleHasher
       next null, file
     else  
-      dataThrough.end file.contents, null, ->
-        dataThrough.resume()
+      singleHasher.end file.contents, null, ->
+        singleHasher.resume()
         next null, file
+        return
+    return
 
-
-class StreamHasher extends events.EventEmitter
-  constructor: (@options) ->
-
-  createDataThrough: (file) ->
-    new DataThrough @, file.path
-
-  createFileThrough: ->
-    new FileThrough @
-
-  emitDigest: (name, digest) ->
-    @emit 'digest', name, digest
-
-
-module.exports = StreamHasher
+module.exports = 
+  SingleHasher: SingleHasher
+  MultiHasher: MultiHasher
 

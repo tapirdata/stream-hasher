@@ -1,14 +1,16 @@
 {
   "name": "stream-hasher",
-  "version": "0.0.1",
-  "description": "A through-stream that calculates a hash-digist on the fly ",
-  "main": "index.js",
+  "version": "0.0.2",
+  "description": "A through-stream that calculates hash-digests on the fly ",
+  "main": "./lib",
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "mocha --compilers coffee:coffee-script/register",
+    "build": "coffee -c -b -o lib src/*.coffee",
+    "prepublish": "npm build"
   },
   "keywords": [
     "stream",
-    "throug",
+    "through",
     "hash",
     "digest"
   ],

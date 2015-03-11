@@ -24,12 +24,11 @@ makeTests = (title, options) ->
     digests = {}
 
     before (done) ->
-      hasher = new StreamHasher()
-      hasher.on 'digest', (name, digest) ->
-        # console.log '!digest name=%s digest=%s', name, digest
+      hasher = new StreamHasher.MultiHasher()
+      hasher.on 'digest', (digest, name) ->
         digests[path.relative __dirname, name] = digest
 
-      tap = new VinylTap needBuffer: true
+      tap = new VinylTap needBuffer: true, isLast: true
       tap.on 'tap', (file, buffer) ->
         tapResults[file.relative] = 
           file: file
@@ -39,10 +38,11 @@ makeTests = (title, options) ->
         cwd: __dirname
         buffer: options.useBuffer
       well
-        .pipe hasher.createFileThrough()
+        .pipe hasher
         .pipe tap
+        # .pipe vinylFs.dest path.join __dirname, '.dest'
         .on 'end', done
-        .resume()
+        # .resume()
 
     it 'should pass all files', ->
       expect(_.keys tapResults).to.have.length fileCount
@@ -58,14 +58,13 @@ makeTests = (title, options) ->
       for name, {file: file, buffer: buffer} of tapResults
         expect(fs.readFileSync file.path, 'utf8').to.be.equal buffer.toString 'utf8'
 
-    it 'should create the correct hashes', ->
+    it 'should emit the correct hashes', ->
       for name, expectedDigest of expectedDigests
-        # console.log name, expectedDigest
         expect(digests[name]).to.be.equal expectedDigest
 
 
 
-describe 'stream-hasher', ->
+describe 'stream-hasher createFileThrough', ->
 
   makeTests 'Buffer',
     useBuffer: true
