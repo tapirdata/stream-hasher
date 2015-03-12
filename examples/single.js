@@ -1,7 +1,7 @@
 var fs = require('fs');
-var StreamHasher = require('stream-hasher');
+var streamHasher = require('stream-hasher');
 
-var hasher = new StreamHasher.SingleHasher();
+var hasher = streamHasher({single: true});
 hasher.on('digest', function(digest) {
   console.log('digest=%s', digest)
 });

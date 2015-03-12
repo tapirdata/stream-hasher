@@ -4,8 +4,7 @@ _ = require 'lodash'
 chai = require 'chai'
 expect = chai.expect
 
-StreamHasher = require '../src'
-
+streamHasher = require '../src'
 
 expectedDigests =
   'fixtures/eels.txt': '15390ef2ebb49260800bde88fda1e054791bb5fb'
@@ -19,7 +18,7 @@ makeTests = (title, options) ->
     digest = null
 
     before (done) ->
-      hasher = new StreamHasher.SingleHasher()
+      hasher = streamHasher single: true
       hasher.on 'digest', (_digest) ->
         digest = _digest
 

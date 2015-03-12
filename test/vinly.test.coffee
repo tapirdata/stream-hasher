@@ -6,7 +6,7 @@ chai = require 'chai'
 expect = chai.expect
 
 VinylTap = require './vinyl-tap'
-StreamHasher = require '../src'
+streamHasher = require '../src'
 
 
 fileCount = 2
@@ -24,7 +24,7 @@ makeTests = (title, options) ->
     digests = {}
 
     before (done) ->
-      hasher = new StreamHasher.MultiHasher()
+      hasher = streamHasher()
       hasher.on 'digest', (digest, name) ->
         digests[path.relative __dirname, name] = digest
 

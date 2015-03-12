@@ -35,7 +35,7 @@ class SingleHasher extends stream.Transform
       return
 
 
-class MultiHasher extends stream.Transform
+class VinylHasher extends stream.Transform
   constructor: (options) ->
     super objectMode: true
     @options = options or {}
@@ -58,7 +58,14 @@ class MultiHasher extends stream.Transform
         return
     return
 
-module.exports = 
-  SingleHasher: SingleHasher
-  MultiHasher: MultiHasher
+factory = (options) ->
+  if options and options.single
+    new SingleHasher options
+  else  
+    new VinylHasher options
+
+factory.SingleHasher = SingleHasher
+factory.VinylHasher = VinylHasher
+module.exports = factory
+
 
