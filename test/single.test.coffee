@@ -32,12 +32,12 @@ makeTests = (title, options) ->
 
 
 
-describe 'stream-hasher createDataThrough', ->
+describe 'stream-hasher for single stream', ->
 
-  makeTests 'Short File',
+  makeTests 'with short file',
     relPath: 'fixtures/eels.txt'
 
-  makeTests 'Long File',
+  makeTests 'with long file',
     relPath: 'fixtures/lorem.txt'
 
 

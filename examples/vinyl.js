@@ -2,11 +2,12 @@ var vinylFs = require('vinyl-fs');
 var streamHasher = require('stream-hasher');
 
 var hasher = streamHasher();
-hasher.on('digest', function(digest, name) {
-  console.log('digest=%s name=%s', digest, name)
+hasher.on('digest', function(digest, tag) {
+  console.log('digest=%s tag=%s', digest, tag)
 });
 
-vinylFs.src(['./**/*.js'], {buffer: false}) // works with 'buffer: true', too 
+vinylFs.src(['src/**/*.js'], {buffer: false})
+// works with 'buffer: true', too
   .pipe(hasher)
   .pipe(vinylFs.dest('dist'));
 

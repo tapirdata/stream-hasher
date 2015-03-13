@@ -3,7 +3,7 @@
 
 ## Features
 
-Works with buffer- and file- vinyl-streams.
+Works with buffer- and file- vinyl-streams, optionally renames files.
 
 ## Usage
 
@@ -11,32 +11,32 @@ Works with buffer- and file- vinyl-streams.
 
 ``` js
 var fs = require('fs');
-var StreamHasher = require('stream-hasher');
+var streamHasher = require('stream-hasher');
 
-var hasher = new StreamHasher.SingleHasher();
+var hasher = streamHasher({single: true});
 hasher.on('digest', function(digest) {
   console.log('digest=%s', digest)
 });
 
 fs.createReadStream('package.json')
   .pipe(hasher)
-  .resume();  // or pipe it along
+  .resume();  // it's a stream2, so pipe it along or dump it, otherwise it will stuck.
 ```
 
-### File Stream
+### Vinyl File Stream
 
 ``` js
 var vinylFs = require('vinyl-fs');
-var StreamHasher = require('stream-hasher');
+var streamHasher = require('stream-hasher');
 
-var hasher = new StreamHasher.MultiHasher();
-hasher.on('digest', function(digest, name) {
-  console.log('digest=%s name=%s', digest, name)
+var hasher = streamHasher();
+hasher.on('digest', function(digest, tag) {
+  console.log('digest=%s tag=%s', digest, tag)
 });
 
-vinylFs.src(['./**/*.js'], {buffer: false}) // works with 'buffer: true', too 
+vinylFs.src(['src/**/*.js'], {buffer: false}) // works with 'buffer: true', too 
   .pipe(hasher)
-  .pipe(vinylFs.dest('tmp'))
+  .pipe(vinylFs.dest('dist'));
 ```
 
 ## API

@@ -14,18 +14,22 @@
     "hash",
     "digest"
   ],
-  "author": "",
+  "author": {
+    "name": "Andreas Riedl",
+    "email": "office@tapirdata.com",
+    "url": "https://github.com/tapirdata"
+  },
   "license": "MIT",
+  "dependencies": {
+    "crypto": "0.0.3",
+    "lodash": "^3.5.0",
+    "readable-stream": "^1.0.33"
+  },
   "devDependencies": {
     "bl": "^0.9.4",
     "chai": "^2.1.1",
     "coffee-script": "^1.9.1",
-    "lodash": "^3.5.0",
     "mocha": "^2.2.1",
     "vinyl-fs": "^1.0.0"
-  },
-  "dependencies": {
-    "crypto": "0.0.3",
-    "readable-stream": "^1.0.33"
   }
 }

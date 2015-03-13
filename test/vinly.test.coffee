@@ -18,18 +18,30 @@ expectedDigests =
 
 makeTests = (title, options) ->
 
+  originalPath = (renamedPath) ->
+    if options.rename
+      parts = path.parse renamedPath
+      name = parts.name.replace /\-[a-z0-9]+$/, ''
+      path.join parts.dir, name + parts.ext
+    else
+      renamedPath
+
+
   describe title, ->
 
     tapResults = {}
     digests = {}
 
     before (done) ->
-      hasher = streamHasher()
-      hasher.on 'digest', (digest, name) ->
-        digests[path.relative __dirname, name] = digest
+      hasher = streamHasher
+        rename: options.rename
+        digestLength: options.digestLength
+      hasher.on 'digest', (digest, tag) ->
+        digests[path.relative __dirname, tag] = digest
 
       tap = new VinylTap needBuffer: true, isLast: true
       tap.on 'tap', (file, buffer) ->
+        # console.log 'file=', file
         tapResults[file.relative] = 
           file: file
           buffer: buffer
@@ -40,9 +52,7 @@ makeTests = (title, options) ->
       well
         .pipe hasher
         .pipe tap
-        # .pipe vinylFs.dest path.join __dirname, '.dest'
         .on 'end', done
-        # .resume()
 
     it 'should pass all files', ->
       expect(_.keys tapResults).to.have.length fileCount
@@ -51,24 +61,41 @@ makeTests = (title, options) ->
       expect(_.keys digests).to.have.length fileCount
 
     it 'should pass file types unmodified', ->
-      for name, {file: file, buffer: buffer} of tapResults
+      for tag, {file: file, buffer: buffer} of tapResults
         expect(file.isBuffer()).to.be.equal options.useBuffer
 
     it 'should pass file contents unmodified', ->
-      for name, {file: file, buffer: buffer} of tapResults
-        expect(fs.readFileSync file.path, 'utf8').to.be.equal buffer.toString 'utf8'
+      for tag, {file: file, buffer: buffer} of tapResults
+        expect(fs.readFileSync (originalPath file.path), 'utf8').to.be.equal buffer.toString 'utf8'
 
     it 'should emit the correct hashes', ->
-      for name, expectedDigest of expectedDigests
-        expect(digests[name]).to.be.equal expectedDigest
+      for tag, expectedDigest of expectedDigests
+        if options.digestLength
+          expectedDigest = expectedDigest.slice 0, options.digestLength
+        expect(digests[tag]).to.be.equal expectedDigest
 
 
 
-describe 'stream-hasher createFileThrough', ->
+describe 'stream-hasher for vinly-stream', ->
 
-  makeTests 'Buffer',
+  makeTests 'with buffer-files',
     useBuffer: true
+    rename: false
 
-  makeTests 'Stream',
+  makeTests 'with stream-files',
     useBuffer: false
+    rename: false
+
+  makeTests 'with buffer-files, rename',
+    useBuffer: true
+    rename: 'postfix'
+
+  makeTests 'with stream-files, rename',
+    useBuffer: false
+    rename: 'postfix'
+
+  makeTests 'with stream-files, rename, short digest',
+    useBuffer: false
+    rename: 'postfix'
+    digestLength: 8
 
