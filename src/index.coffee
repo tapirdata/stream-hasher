@@ -40,6 +40,19 @@ class SingleHasher extends stream.Transform
       next null, chunk
       return
 
+createRenameFile = (rename) ->
+  if typeof path.parse == 'function'
+    (file, digest) ->
+      parts = path.parse file.path
+      name = rename parts.name, digest
+      file.path = path.join parts.dir, name + parts.ext
+  else   
+    (file, digest) ->
+      ext = path.extname file.path
+      name = path.basename file.path, ext
+      name = rename name, digest
+      file.path = path.join path.dirname(file.path), name + ext
+
 
 class VinylHasher extends stream.Transform
 
@@ -60,10 +73,7 @@ class VinylHasher extends stream.Transform
         if not _rename?
           throw new Error "no standard rename: '#{rename}'"
         rename = _rename
-        renameFile = (file, digest) ->
-          parts = path.parse file.path
-          name = rename parts.name, digest
-          file.path = path.join parts.dir, name + parts.ext
+        renameFile = createRenameFile rename
     @renameFile = renameFile
     @singleOptions = @createSingleOptions options
 

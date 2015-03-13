@@ -20,7 +20,13 @@ makeTests = (title, options) ->
 
   originalPath = (renamedPath) ->
     if options.rename
-      parts = path.parse renamedPath
+      if typeof path.parse == 'function'
+        parts = path.parse renamedPath
+      else
+        parts =
+          ext: path.extname renamedPath
+        parts.name = path.basename renamedPath, parts.ext  
+        parts.dir = path.dirname renamedPath
       name = parts.name.replace /\-[a-z0-9]+$/, ''
       path.join parts.dir, name + parts.ext
     else
