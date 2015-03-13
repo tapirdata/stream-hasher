@@ -97,14 +97,14 @@ class VinylHasher extends stream.Transform
   _transform: (file, enc, next) ->
     singleHasher = @createSingleHasher @tagger file
 
-    ho = (complete) ->
+    hashIt = (done) ->
       if file.isStream()
         file.contents = file.contents.pipe singleHasher
-        complete()
+        done()
       else
         singleHasher.end file.contents, null, ->
           singleHasher.resume()
-          complete()
+          done()
           return
       return
 
@@ -113,9 +113,9 @@ class VinylHasher extends stream.Transform
         @renameFile file, digest
         next null, file
         return
-      ho ->
+      hashIt ->
     else
-      ho -> next null, file
+      hashIt -> next null, file
     return
 
 
