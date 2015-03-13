@@ -2,10 +2,9 @@ fs = require 'fs'
 path = require 'path'
 _ = require 'lodash'
 vinylFs = require 'vinyl-fs'
+vinylTapper = require 'vinyl-tapper'
 chai = require 'chai'
 expect = chai.expect
-
-VinylTap = require './vinyl-tap'
 streamHasher = require '../src'
 
 
@@ -45,8 +44,10 @@ makeTests = (title, options) ->
       hasher.on 'digest', (digest, tag) ->
         digests[path.relative __dirname, tag] = digest
 
-      tap = new VinylTap needBuffer: true, isLast: true
-      tap.on 'tap', (file, buffer) ->
+      tapper = vinylTapper
+        provideBuffer: true
+        terminate: true
+      tapper.on 'tap', (file, buffer) ->
         # console.log 'file=', file
         tapResults[file.relative] = 
           file: file
@@ -57,7 +58,7 @@ makeTests = (title, options) ->
         buffer: options.useBuffer
       well
         .pipe hasher
-        .pipe tap
+        .pipe tapper
         .on 'end', done
 
     it 'should pass all files', ->

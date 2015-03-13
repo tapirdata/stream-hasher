@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
     "build": "coffee -c -b -o lib src/*.coffee",
-    "prepublish": "npm build"
+    "prepublish": "npm run build"
   },
   "keywords": [
     "stream",
@@ -14,6 +14,10 @@
     "hash",
     "digest"
   ],
+  "repository": {
+    "type": "github",
+    "url": "https://github.com/tapirdata/stream-hasher"
+  },
   "author": {
     "name": "Andreas Riedl",
     "email": "office@tapirdata.com",
@@ -30,6 +34,7 @@
     "chai": "^2.1.1",
     "coffee-script": "^1.9.1",
     "mocha": "^2.2.1",
-    "vinyl-fs": "^1.0.0"
+    "vinyl-fs": "^1.0.0",
+    "vinyl-tapper": "^0.2.3"
   }
 }
