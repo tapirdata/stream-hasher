@@ -49,7 +49,7 @@ creates a new hasher. Recognized options are:
 - `options.algorithm`: the hash-algorithm to be used (default: 'sha1'). See [crypto.createHash](https://nodejs.org/api/crypto.html#crypto_crypto_createhash_algorithm) for available algorithms.
 - `options.digestEncoding`: how the resulting digest is encoded (default: 'hex'). See [Buffer#toString](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end) for available encodings. Use 'buffer' to get a bare buffer.
 - `options.digestLength`: if supplied, the digest length is limited to this length
-- `options.single`: if true, create a hasher that transforms a single data-stream; if false (default), create a hasher to transform a vinyl-file-stream. In latter case, the following additional options are recognized:
+- `options.single`: If true, create a hasher that transforms a single data-stream. If false (default), create a hasher to transform a vinyl-file-stream. In latter case, the following additional options are recognized:
   - `options.tagger`: a function that generates the *tag* from the processed vinyl-file. Defaults to a function that returns `file.path`.
   - `options.rename`: a function that takes the original file name (without extension) and the calculated digest and should a replacement file name. The strings 'postfix' and 'prefix' can be used, too. They expose some standard replacers.
   - `options.renameFile`: to obtain even finer contol of renaming supply a function that take a viny-file and the digest to directly manipulate the file's path. 
