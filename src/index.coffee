@@ -116,7 +116,8 @@ class VinylHasher extends stream.Transform
         return
       hashIt ->
     else
-      @emit 'rename', tag, tag
+      singleHasher.on 'digest', (digest, tag) =>
+        @emit 'rename', tag, tag
       hashIt -> next null, file
     return
 
