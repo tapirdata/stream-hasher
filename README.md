@@ -55,4 +55,17 @@ creates a new hasher. Recognized options are:
   - `options.renameFile`: to obtain even finer contol of renaming supply a function that take a viny-file and the digest to directly manipulate the file's path. 
   - `options.maxSingleSize`: In the special case of an stream-file to be renamed, the digest must me emmitted before the file can be passed forward. Then is value is used to set the `highWaterMark` for processing that file to prevent deadlocking. Default is 16MB.
 
+### Event 'digest'
+
+is emmitted for every calculated hash-digest
+
+- `digest`: the calculated digest
+- `tag`: the file's tag
+
+### Event 'rename'
+
+is emmitted after the file has been renamed. If no renaming was specified, this is event is emmitted with `oldTag === newTag`.
+
+- `oldTag`: the file's tag before renaming
+- `newTag`: the file's tag after renaming
 

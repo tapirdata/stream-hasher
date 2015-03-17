@@ -101,6 +101,11 @@ describe 'stream-hasher for vinly-stream', ->
     useBuffer: false
     rename: 'postfix'
 
+  makeTests 'with stream-files, rename function',
+    useBuffer: false
+    rename: (name, digest) ->
+      "#{name}-#{digest}"
+
   makeTests 'with stream-files, rename, short digest',
     useBuffer: false
     rename: 'postfix'

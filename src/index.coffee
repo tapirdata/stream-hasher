@@ -69,11 +69,10 @@ class VinylHasher extends stream.Transform
     else if options.rename
       rename = options.rename
       if typeof rename != 'function'
-        _rename = @standardRenames[rename]
-        if not _rename?
-          throw new Error "no standard rename: '#{rename}'"
-        rename = _rename
-        renameFile = createRenameFile rename
+        rename = @standardRenames[rename]
+        if not rename?
+          throw new Error "no standard rename: '#{options.rename}'"
+      renameFile = createRenameFile rename
     @renameFile = renameFile
     @singleOptions = @createSingleOptions options
 
@@ -89,13 +88,14 @@ class VinylHasher extends stream.Transform
     postfix: (name, digest) -> "#{name}-#{digest}"
     prefix: (name, digest) -> "#{digest}-#{name}"
 
-  createSingleHasher: (tag) ->
+  createSingleHasher: (file) ->
+    tag = @tagger file
     singleHasher = new @constructor.SingleClass tag, @singleOptions
     singleHasher.on 'digest', (digest, tag) =>
       @emit 'digest', digest, tag
 
   _transform: (file, enc, next) ->
-    singleHasher = @createSingleHasher @tagger file
+    singleHasher = @createSingleHasher file
 
     hashIt = (done) ->
       if file.isStream()
@@ -103,18 +103,20 @@ class VinylHasher extends stream.Transform
         done()
       else
         singleHasher.end file.contents, null, ->
-          singleHasher.resume()
           done()
           return
+        singleHasher.resume()
       return
 
     if @renameFile
-      singleHasher.on 'digest', (digest) =>
+      singleHasher.on 'digest', (digest, tag) =>
         @renameFile file, digest
+        @emit 'rename', tag, @tagger file
         next null, file
         return
       hashIt ->
     else
+      @emit 'rename', tag, tag
       hashIt -> next null, file
     return
 
