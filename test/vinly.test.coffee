@@ -17,39 +17,28 @@ expectedDigests =
 
 makeTests = (title, options) ->
 
-  originalPath = (renamedPath) ->
-    if options.rename
-      if typeof path.parse == 'function'
-        parts = path.parse renamedPath
-      else
-        parts =
-          ext: path.extname renamedPath
-        parts.name = path.basename renamedPath, parts.ext  
-        parts.dir = path.dirname renamedPath
-      name = parts.name.replace /\-[a-z0-9]+$/, ''
-      path.join parts.dir, name + parts.ext
-    else
-      renamedPath
-
-
   describe title, ->
 
     tapResults = {}
     digests = {}
 
+    tagger = (file) -> path.relative __dirname, file.path
+
     before (done) ->
       hasher = streamHasher
         rename: options.rename
         digestLength: options.digestLength
+        optioner: options.optioner
+        tagger: tagger
       hasher.on 'digest', (digest, tag) ->
-        digests[path.relative __dirname, tag] = digest
+        digests[tag] = digest
 
       tapper = vinylTapper
         provideBuffer: true
         terminate: true
       tapper.on 'tap', (file, buffer) ->
         # console.log 'file=', file
-        tapResults[file.relative] = 
+        tapResults[tagger file] = 
           file: file
           buffer: buffer
 
@@ -73,14 +62,24 @@ makeTests = (title, options) ->
 
     it 'should pass file contents unmodified', ->
       for tag, {file: file, buffer: buffer} of tapResults
-        expect(fs.readFileSync (originalPath file.path), 'utf8').to.be.equal buffer.toString 'utf8'
+        originalPath = file.history[0]
+        expect(fs.readFileSync originalPath, 'utf8').to.be.equal buffer.toString 'utf8'
 
     it 'should emit the correct hashes', ->
       for tag, expectedDigest of expectedDigests
         if options.digestLength
           expectedDigest = expectedDigest.slice 0, options.digestLength
         expect(digests[tag]).to.be.equal expectedDigest
-
+    
+    if options.rename or options.optioner
+      it 'should rename files', ->
+        for tag, {file: file, buffer: buffer} of tapResults
+          originalTag = path.relative __dirname, file.history[0]
+          expectedDigest = expectedDigests[originalTag]
+          if options.digestLength
+            expectedDigest = expectedDigest.slice 0, options.digestLength
+          console.log 'rename:', tag, expectedDigest
+          expect(tag).to.contain expectedDigest
 
 
 describe 'stream-hasher for vinly-stream', ->
@@ -105,6 +104,11 @@ describe 'stream-hasher for vinly-stream', ->
     useBuffer: false
     rename: (name, digest) ->
       "#{name}-#{digest}"
+
+  makeTests 'with stream-files, use optioner',
+    useBuffer: false
+    optioner: (file) ->
+      rename: 'postfix'
 
   makeTests 'with stream-files, rename, short digest',
     useBuffer: false

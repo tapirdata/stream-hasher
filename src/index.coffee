@@ -41,17 +41,11 @@ class SingleHasher extends stream.Transform
       return
 
 createRenameFile = (rename) ->
-  if typeof path.parse == 'function'
-    (file, digest) ->
-      parts = path.parse file.path
-      name = rename parts.name, digest
-      file.path = path.join parts.dir, name + parts.ext
-  else   
-    (file, digest) ->
-      ext = path.extname file.path
-      name = path.basename file.path, ext
-      name = rename name, digest
-      file.path = path.join path.dirname(file.path), name + ext
+  (file, digest) ->
+    ext = path.extname file.path
+    name = path.basename file.path, ext
+    name = rename name, digest
+    file.path = path.join path.dirname(file.path), name + ext
 
 
 class VinylHasher extends stream.Transform
@@ -62,38 +56,51 @@ class VinylHasher extends stream.Transform
     super objectMode: true
     options = options or {}
     @tagger = options.tagger or (file) -> file.path
+    @optioner = options.optioner
+    @maxSingleSize = options.maxSingleSize or 16 * 1024 * 1024
+    @defaultFileOptions = @createDefaultFileOptions options
+
+  standardRenames:
+    postfix: (name, digest) -> "#{name}-#{digest}"
+    prefix: (name, digest) -> "#{digest}-#{name}"
+
+  createDefaultFileOptions: (options) ->
+    fileOptions = _.pick options, @constructor.SingleClass.optionNames
+    fileOptions.renameFile = options.renameFile
+    fileOptions.rename = options.rename
+    fileOptions
+
+  getFileOptions: (file) ->
+    options = _.clone @defaultFileOptions
+    if @optioner
+      _.merge options, @optioner file
     if options.renameFile
-      renameFile = options.renameFile
-      if typeof renameFile != 'function'
-        throw new Error 'renameFile must be a function'
+      if typeof options.renameFile != 'function'
+        throw new Error "renameFile must be a function, got #{options.renameFile}"
     else if options.rename
       rename = options.rename
       if typeof rename != 'function'
         rename = @standardRenames[rename]
         if not rename?
           throw new Error "no standard rename: '#{options.rename}'"
-      renameFile = createRenameFile rename
-    @renameFile = renameFile
-    @singleOptions = @createSingleOptions options
-
-  createSingleOptions: (options) ->
-    sopt = _.pick options, @constructor.SingleClass.optionNames
-    if @renameFile
+      options.renameFile = createRenameFile rename
+    if options.renameFile
       # if we want to rename, singleHasher must see the whole
       # file before it emits the hash, that we need for renaming
-      sopt.highWaterMark = options.maxSingleSize || 16 * 1024 * 1024
-    sopt
+      options.highWaterMark = @maxSingleSize
+    options
 
-  standardRenames:
-    postfix: (name, digest) -> "#{name}-#{digest}"
-    prefix: (name, digest) -> "#{digest}-#{name}"
-
-  createSingleHasher: (file) ->
-    tag = @tagger file
-    singleHasher = new @constructor.SingleClass tag, @singleOptions
+  createSingleHasher: (tag, options) ->
+    new @constructor.SingleClass tag, options
 
   _transform: (file, enc, next) ->
-    singleHasher = @createSingleHasher file
+    try
+      options = @getFileOptions file
+    catch err  
+      next err
+      return
+    tag = @tagger file
+    singleHasher = @createSingleHasher tag, options
 
     hashIt = (done) ->
       if file.isStream()
@@ -106,9 +113,9 @@ class VinylHasher extends stream.Transform
         singleHasher.resume()
       return
 
-    if @renameFile
+    if options.renameFile
       singleHasher.on 'digest', (digest, tag) =>
-        @renameFile file, digest
+        options.renameFile file, digest
         @emit 'digest', digest, tag, @tagger file
         next null, file
         return
