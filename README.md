@@ -61,11 +61,6 @@ is emmitted for every calculated hash-digest
 
 - `digest`: the calculated digest
 - `tag`: the file's tag
+- `newTag`: if renaming was specified, this is the file's *tag* after renaming
 
-### Event 'rename'
-
-is emmitted after the file has been renamed. If no renaming was specified, this is event is emmitted with `oldTag === newTag`.
-
-- `oldTag`: the file's tag before renaming
-- `newTag`: the file's tag after renaming
 

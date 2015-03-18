@@ -91,8 +91,6 @@ class VinylHasher extends stream.Transform
   createSingleHasher: (file) ->
     tag = @tagger file
     singleHasher = new @constructor.SingleClass tag, @singleOptions
-    singleHasher.on 'digest', (digest, tag) =>
-      @emit 'digest', digest, tag
 
   _transform: (file, enc, next) ->
     singleHasher = @createSingleHasher file
@@ -111,13 +109,13 @@ class VinylHasher extends stream.Transform
     if @renameFile
       singleHasher.on 'digest', (digest, tag) =>
         @renameFile file, digest
-        @emit 'rename', tag, @tagger file
+        @emit 'digest', digest, tag, @tagger file
         next null, file
         return
       hashIt ->
     else
       singleHasher.on 'digest', (digest, tag) =>
-        @emit 'rename', tag, tag
+        @emit 'digest', digest, tag
       hashIt -> next null, file
     return
 
