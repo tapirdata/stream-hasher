@@ -78,7 +78,7 @@ makeTests = (title, options) ->
           expectedDigest = expectedDigests[originalTag]
           if options.digestLength
             expectedDigest = expectedDigest.slice 0, options.digestLength
-          console.log 'rename:', tag, expectedDigest
+          # console.log 'rename:', tag, expectedDigest
           expect(tag).to.contain expectedDigest
 
 

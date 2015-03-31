@@ -33,6 +33,6 @@
     "coffee-script": "^1.9.1",
     "mocha": "^2.2.1",
     "vinyl-fs": "^1.0.0",
-    "vinyl-tapper": "^0.2.4"
+    "vinyl-tapper": "^0.2.5"
   }
 }
