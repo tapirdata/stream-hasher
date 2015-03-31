@@ -44,24 +44,24 @@ vinylFs.src(['src/**/*.js'], {buffer: false}) // works with 'buffer: true', too
 
 #### var hasher = streamHasher(options);
 
-creates a new hasher. Recognized options are:
+Creates a new hasher. Recognized options are:
 
-- `algorithm`: the hash-algorithm to be used (default: `'sha1'`). See [crypto.createHash](https://nodejs.org/api/crypto.html#crypto_crypto_createhash_algorithm) for available algorithms.
-- `digestEncoding`: how the resulting digest is encoded (default: `'hex'`). See [Buffer#toString](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end) for available encodings. Use 'buffer' to get a bare buffer.
-- `digestLength`: if supplied, the digest length is limited to this length
-- `single`: If true, create a hasher that transforms a single data-stream. If false (default), create a hasher to transform a vinyl-file-stream. In latter case, the following additional options are recognized:
-  - `tagger`: a `function(file)` that generates the *tag* from the processed vinyl-file. Defaults to a function that returns `file.path`.
-  - `optioner`: a `function(file)` that generates an object to overwrite options per vinyl-file
-  - `rename`: a function that takes the original file name (without extension) and the calculated digest and should a replacement file name. The strings 'postfix' and 'prefix' can be used, too. They expose some standard replacers.
-  - `renameFile`: to obtain even finer contol of renaming supply a function that take a viny-file and the digest to directly manipulate the file's path. 
-  - `maxSingleSize`: In the special case of an stream-file to be renamed, the digest must me emmitted before the file can be passed forward. Then is value is used to set the `highWaterMark` for processing that file to prevent deadlocking. Default is 16MB.
+- `algorithm` (string, default: `'sha1'`): the hash-algorithm to be used. See [crypto.createHash](https://nodejs.org/api/crypto.html#crypto_crypto_createhash_algorithm) for available algorithms.
+- `digestEncoding` (string, default: `'hex'`): how the resulting digest is encoded. See [Buffer#toString](https://nodejs.org/api/buffer.html#buffer_buf_tostring_encoding_start_end) for available encodings. Use 'buffer' to get a bare buffer.
+- `digestLength` (number): if supplied, the digest length is limited to this length
+- `single` (boolean): If true, create a hasher that transforms a single data-stream. If false (default), create a hasher to transform a vinyl-file-stream. In latter case, the following additional options are recognized:
+  - `tagger` (`function(file)`): a function that generates the **tag** from the processed vinyl-file. Defaults to a function that returns `file.path`.
+  - `optioner` (`function(file)`): a function that generates an object to overwrite options per vinyl-file
+  - `rename`: (`function(basename, digest)` or string): a function that takes the original file name (without extension) and the calculated digest and should return a replacement file name. The strings 'postfix' and 'prefix' can be used, too. They expose some standard replacers.
+  - `renameFile` (`function (file)`): to obtain even finer control of renaming supply a function that takes a vinyl-file and the digest to directly manipulate the file's path. 
+  - `maxSingleSize` (number): In the special case of an stream-file to be renamed, the digest must me emitted before the file can be passed forward. Then is value is used to set the `highWaterMark` for processing that file to prevent deadlocking. Default is 16MB.
 
 ### Event 'digest'
 
-is emmitted for every calculated hash-digest
+is emitted for every calculated hash-digest
 
 - `digest`: the calculated digest
-- `tag`: the file's tag
-- `newTag`: if renaming was specified, this is the file's *tag* after renaming
+- `tag`: the file's **tag**
+- `newTag`: if renaming was specified, this is the file's **tag** after renaming
 
 
