@@ -25,14 +25,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "lodash": "^3.5.0",
-    "readable-stream": "^2.0.2"
+    "lodash": "^4.0.0",
+    "readable-stream": "^2.0.5"
   },
   "devDependencies": {
-    "chai": "^3.3.0",
+    "chai": "^3.4.1",
     "coffee-script": "^1.9.1",
-    "mocha": "^2.2.1",
-    "vinyl-fs": "^2.1.1",
-    "vinyl-tapper": "^0.2.6"
+    "mocha": "^2.3.4",
+    "vinyl-fs": "^2.3.1",
+    "vinyl-tapper": "^0.3.0"
   }
 }
