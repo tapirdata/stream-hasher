@@ -1,6 +1,6 @@
 {
   "name": "stream-hasher",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A through-stream that calculates hash-digests on the fly ",
   "main": "./lib",
   "scripts": {
