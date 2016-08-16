@@ -1,4 +1,10 @@
-# stream-hasher [![Build Status](https://secure.travis-ci.org/tapirdata/stream-hasher.png?branch=master)](https://travis-ci.org/tapirdata/stream-hasher) [![Dependency Status](https://david-dm.org/tapirdata/stream-hasher.svg)](https://david-dm.org/tapirdata/stream-hasher) [![devDependency Status](https://david-dm.org/tapirdata/stream-hasher/dev-status.svg)](https://david-dm.org/tapirdata/stream-hasher#info=devDependencies)
+# stream-hasher
+
+[![npm version](https://img.shields.io/npm/v/stream-hasher.svg?style=flat-square)](https://www.npmjs.com/package/stream-hasher)
+[![Build Status](https://secure.travis-ci.org/tapirdata/stream-hasher.png?branch=master)](https://travis-ci.org/tapirdata/stream-hasher) 
+[![Dependency Status](https://david-dm.org/tapirdata/stream-hasher.svg)](https://david-dm.org/tapirdata/stream-hasher)
+[![devDependency Status](https://david-dm.org/tapirdata/stream-hasher/dev-status.svg)](https://david-dm.org/tapirdata/stream-hasher#info=devDependencies)
+
 > A transform-stream that emits hash-digests of streams or vinyl-file-streams
 
 ## Features
@@ -10,10 +16,10 @@ Works with vinyl-streams in buffer- and stream-mode, optionally renames files.
 ### Single Data Stream
 
 ``` js
-var fs = require('fs');
-var streamHasher = require('stream-hasher');
+import fs from 'fs';
+import streamHasher from 'stream-hasher';
 
-var hasher = streamHasher({single: true});
+const hasher = streamHasher({single: true});
 hasher.on('digest', function(digest) {
   console.log('digest=%s', digest)
 });
@@ -27,10 +33,10 @@ fs.createReadStream('package.json')
 ### Vinyl File Stream
 
 ``` js
-var vinylFs = require('vinyl-fs');
-var streamHasher = require('stream-hasher');
+import vinylFs from 'vinyl-fs';
+import streamHasher from 'stream-hasher';
 
-var hasher = streamHasher();
+const hasher = streamHasher();
 hasher.on('digest', function(digest, tag) {
   console.log('digest=%s tag=%s', digest, tag)
 });
@@ -38,11 +44,12 @@ hasher.on('digest', function(digest, tag) {
 vinylFs.src(['src/**/*.js'], {buffer: false}) // works with 'buffer: true', too 
   .pipe(hasher)
   .pipe(vinylFs.dest('dist'));
+
 ```
 
 ## API
 
-#### var hasher = streamHasher(options);
+#### const hasher = streamHasher(options);
 
 Creates a new hasher. Recognized options are:
 
