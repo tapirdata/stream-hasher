@@ -3,10 +3,12 @@
   "version": "1.0.2",
   "description": "A through-stream that calculates hash-digests on the fly ",
   "main": "./lib",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "test": "mocha --compilers js:babel-register",
-    "build": "rm -rf lib; babel -d lib src",
-    "prepublish": "npm run build"
+    "lint": "tslint src/**/* test/**/*.ts",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "test": "mocha --compilers ts:ts-node/register ./test"
   },
   "keywords": [
     "stream",
@@ -23,20 +25,23 @@
     "email": "office@tapirdata.com",
     "url": "https://github.com/tapirdata"
   },
-  "license": "MIT",
   "dependencies": {
-    "babel-runtime": "^6.23.0",
+    "@types/lodash": "^4.14.66",
+    "@types/node": "^7.0.31",
+    "@types/vinyl": "^2.0.0",
     "lodash": "^4.17.4",
-    "readable-stream": "^2.2.2"
+    "vinyl": "^2.0.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.23.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babel-register": "^6.23.0",
-    "chai": "^3.5.0",
+    "@types/chai": "^4.0.0",
+    "@types/mocha": "^2.2.41",
+    "@types/vinyl-fs": "^2.4.5",
+    "chai": "^4.0.2",
     "mocha": "^3.2.0",
+    "ts-node": "^3.0.6",
+    "tslint": "^5.4.3",
+    "typescript": "^2.4.0",
     "vinyl-fs": "^2.4.4",
-    "vinyl-tapper": "^1.0.1"
+    "vinyl-tapper": "^1.1.0"
   }
 }
