@@ -5,7 +5,7 @@
   "main": "./lib",
   "types": "lib/index.d.ts",
   "scripts": {
-    "lint": "tslint src/**/* test/**/*.ts",
+    "lint": "tslint \"src/**/*\" \"test/**/*.ts\"",
     "build": "tsc",
     "prepare": "npm run build",
     "test": "mocha --compilers ts:ts-node/register ./test"
