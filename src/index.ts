@@ -11,8 +11,8 @@ import { VinylHasher } from "./vinylHasher"
 
 export interface Factory {
   (options: HasherOptions): SingleHasher | VinylHasher,
-  SingleHasher: any
-  VinylHasher: any
+  SingleHasher: typeof SingleHasher
+  VinylHasher: typeof VinylHasher
 }
 
 const factory = ((options) => {
@@ -23,8 +23,8 @@ const factory = ((options) => {
   }
 }) as Factory
 
-factory.SingleHasher = SingleHasher
-factory.VinylHasher = VinylHasher
+factory.SingleHasher = SingleHasher // legacy
+factory.VinylHasher = VinylHasher // legacy
 
 export default factory
-export { HasherOptions }
+export { HasherOptions, SingleHasher, VinylHasher }
