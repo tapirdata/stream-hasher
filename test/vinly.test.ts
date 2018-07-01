@@ -1,10 +1,11 @@
+import { expect } from "chai"
 import fs = require("fs")
-import path = require("path")
 import _ = require("lodash")
+import path = require("path")
 import File = require("vinyl")
 import vinylFs = require ("vinyl-fs")
-import { expect } from "chai"
 import vinylTapper from "vinyl-tapper"
+
 import streamHasher from "../src"
 import { HasherOptions } from "../src"
 

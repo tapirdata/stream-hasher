@@ -1,7 +1,7 @@
-import fs = require("fs")
-import path = require("path")
-import _ = require("lodash")
 import { expect } from "chai"
+import fs = require("fs")
+import _ = require("lodash")
+import path = require("path")
 
 import streamHasher from "../src"
 import { HasherOptions } from "../src"

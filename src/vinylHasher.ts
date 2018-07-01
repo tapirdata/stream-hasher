@@ -1,7 +1,8 @@
+import _ = require("lodash")
 import path = require("path")
 import stream = require("stream")
 import File = require("vinyl")
-import _ = require("lodash")
+
 import { Cb, HasherOptions, Rename, RenameFile, Tagger } from "./options"
 
 function createRenameFile(rename: Rename): RenameFile {
