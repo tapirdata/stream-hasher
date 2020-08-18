@@ -1,4 +1,4 @@
-import { Cb, HasherOptions, Rename, RenameFile, Tagger } from "./options"
+import { HasherOptions } from "./options"
 import { SingleHasher } from "./singleHasher"
 import { VinylHasher } from "./vinylHasher"
 

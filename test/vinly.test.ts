@@ -1,9 +1,9 @@
 import { expect } from "chai"
-import fs = require("fs")
-import _ = require("lodash")
-import path = require("path")
-import File = require("vinyl")
-import vinylFs = require ("vinyl-fs")
+import * as fs from "fs" 
+import * as _ from "lodash"
+import * as path from "path" 
+import * as File from "vinyl" 
+import * as vinylFs from "vinyl-fs" 
 import vinylTapper from "vinyl-tapper"
 
 import streamHasher from "../src"
@@ -103,8 +103,7 @@ function makeTests(title: string, options: any) {
         }
       })
     }
-  },
-  )
+  })
 }
 
 describe("stream-hasher for vinly-stream", () => {
@@ -112,20 +111,17 @@ describe("stream-hasher for vinly-stream", () => {
   makeTests("with buffer-files", {
     useBuffer: true,
     rename: false,
-  },
-  )
+  })
 
   makeTests("with stream-files", {
     useBuffer: false,
     rename: false,
-  },
-  )
+  })
 
   makeTests("with buffer-files, rename", {
     useBuffer: true,
     rename: "postfix",
-  },
-  )
+  })
 
   makeTests("with stream-files, rename", {
     useBuffer: false,
@@ -138,22 +134,18 @@ describe("stream-hasher for vinly-stream", () => {
     rename(name: string, digest: string) {
       return `${name}-${digest}`
     },
-  },
-  )
+  })
 
   makeTests("with stream-files, use optioner", {
     useBuffer: false,
     optioner(file: File) {
       return {rename: "postfix"}
     },
-  },
-  )
+  })
 
   return makeTests("with stream-files, rename, short digest", {
     useBuffer: false,
     rename: "postfix",
     digestLength: 8,
-  },
-  )
-},
-)
+  })
+})

@@ -1,14 +1,14 @@
-import crypto = require("crypto")
-import stream = require("stream")
+import { Hash, createHash }  from "crypto"
+import { Transform } from "stream"
+
 import { Cb, HasherOptions } from "./options"
 
-export class SingleHasher extends stream.Transform {
-
+export class SingleHasher extends Transform {
   protected tag: string
   protected algorithm: string
-  protected digestEncoding: string
+  protected digestEncoding: BufferEncoding | "buffer"
   protected digestLength?: number
-  protected hashStream: crypto.Hash
+  protected hashStream: Hash
 
   constructor(tag: string | HasherOptions, options?: HasherOptions) {
     super(options)
@@ -36,16 +36,15 @@ export class SingleHasher extends stream.Transform {
     })
   }
 
-  public _transform(chunk: Buffer, enc: string, next: Cb) {
+  public _transform(chunk: Buffer, enc: BufferEncoding, next: Cb) {
     return this.hashStream.write(chunk as any, enc, () => {
       next(null, chunk)
     })
   }
 
   protected createHashStream() {
-    return crypto.createHash(this.algorithm)
+    return createHash(this.algorithm)
   }
 
+  static optionNames = ["algorithm", "digestEncoding", "digestLength"]
 }
-
-(SingleHasher as any).optionNames = ["algorithm", "digestEncoding", "digestLength"]

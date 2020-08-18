@@ -1,10 +1,9 @@
 import { expect } from "chai"
-import fs = require("fs")
-import _ = require("lodash")
-import path = require("path")
+import * as fs from "fs"
+import * as _ from "lodash"
+import * as path from "path" 
 
 import streamHasher from "../src"
-import { HasherOptions } from "../src"
 
 const expectedDigests: { [key: string]: string } = {
   "fixtures/eels.txt": "15390ef2ebb49260800bde88fda1e054791bb5fb",
@@ -12,9 +11,7 @@ const expectedDigests: { [key: string]: string } = {
 }
 
 function makeTests(title: string, options: any) {
-
   describe(title, () => {
-
     let digest: string | null = null
 
     before((done) => {
@@ -36,7 +33,6 @@ function makeTests(title: string, options: any) {
 }
 
 describe("stream-hasher for single stream", () => {
-
   makeTests("with short file",
     {relPath: "fixtures/eels.txt"},
   )
@@ -44,5 +40,4 @@ describe("stream-hasher for single stream", () => {
   return makeTests("with long file",
     {relPath: "fixtures/lorem.txt"},
   )
-},
-)
+})

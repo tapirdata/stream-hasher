@@ -1,7 +1,7 @@
-import _ = require("lodash")
-import path = require("path")
-import stream = require("stream")
-import File = require("vinyl")
+import * as _ from "lodash"
+import * as path from "path"
+import { Transform } from "stream"
+import * as File from "vinyl"
 
 import { Cb, HasherOptions, Rename, RenameFile, Tagger } from "./options"
 
@@ -13,8 +13,7 @@ function createRenameFile(rename: Rename): RenameFile {
   }
 }
 
-export class VinylHasher extends stream.Transform {
-
+export class VinylHasher extends Transform {
   protected tagger: Tagger
   protected optioner?: (file: File) => any
   protected maxSingleSize: number
