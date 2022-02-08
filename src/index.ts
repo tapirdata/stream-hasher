@@ -1,30 +1,18 @@
-import { HasherOptions } from "./options"
-import { SingleHasher } from "./singleHasher"
-import { VinylHasher } from "./vinylHasher"
-
-(VinylHasher as any).SingleClass = SingleHasher;
-
-(VinylHasher.prototype as any).standardRenames = {
-  postfix(name: string, digest: string) { return `${name}-${digest}` },
-  prefix(name: string, digest: string) { return `${digest}-${name}` },
-}
+import { HasherOptions } from './options';
+import { SingleHasher } from './singleHasher';
+import { VinylHasher } from './vinylHasher';
 
 export interface Factory {
-  (options: HasherOptions): SingleHasher | VinylHasher,
-  SingleHasher: typeof SingleHasher
-  VinylHasher: typeof VinylHasher
+  (options: HasherOptions): SingleHasher | VinylHasher;
 }
 
-const factory = ((options) => {
+const factory: Factory = (options: HasherOptions) => {
   if (options && options.single) {
-    return new SingleHasher(options)
+    return new SingleHasher(options);
   } else {
-    return new VinylHasher(options)
+    return new VinylHasher(options);
   }
-}) as Factory
+};
 
-factory.SingleHasher = SingleHasher // legacy
-factory.VinylHasher = VinylHasher // legacy
-
-export default factory
-export { HasherOptions, SingleHasher, VinylHasher }
+export default factory;
+export { HasherOptions, SingleHasher, VinylHasher };

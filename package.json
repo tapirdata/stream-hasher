@@ -5,10 +5,12 @@
   "main": "./lib",
   "types": "./lib/index.d.ts",
   "scripts": {
-    "test": "mocha --require ts-node/register --extension ts",
-    "lint": "tslint \"src/**/*\" \"test/**/*.ts\"",
-    "build": "tsc",
-    "prepublishOnly": "npm test && npm run lint && npm run build"
+    "build-lib": "tsc",
+    "build": "npm run build-lib",
+    "lint": "eslint src/**/*.ts test/**/*.ts",
+    "prepublishOnly": "npm test && npm run lint && npm run build",
+    "prettify": "prettier -w src/**/*.ts test/**/*.ts",
+    "test": "mocha --require ts-node/register --extension ts"
   },
   "keywords": [
     "stream",
