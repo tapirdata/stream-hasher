@@ -1,7 +1,7 @@
 import { expect } from "chai"
 import * as fs from "fs"
 import * as _ from "lodash"
-import * as path from "path" 
+import * as path from "path"
 
 import streamHasher from "../src"
 

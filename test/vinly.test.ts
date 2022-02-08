@@ -1,9 +1,9 @@
 import { expect } from "chai"
-import * as fs from "fs" 
+import * as fs from "fs"
 import * as _ from "lodash"
-import * as path from "path" 
-import * as File from "vinyl" 
-import * as vinylFs from "vinyl-fs" 
+import * as path from "path"
+import * as File from "vinyl"
+import * as vinylFs from "vinyl-fs"
 import vinylTapper from "vinyl-tapper"
 
 import streamHasher from "../src"
